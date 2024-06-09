@@ -11,7 +11,7 @@ router.post("/login", validInfo, async (req, res) => {
   username = username.toLowerCase();
 
   try {
-    let user = await pool.query("SELECT * FROM user WHERE username = $1", [username]); 
+    let user = await pool.query("SELECT * FROM pengguna WHERE username = $1", [username]); 
 
     if (user.rows.length == 0) return res.status(403).json({type: "WC", message: "Username atau Password Salah"});
     
@@ -36,14 +36,14 @@ router.post("/register", async (req, res) => {
   username = username.toLowerCase();
 
   try {
-    let user = await pool.query("SELECT * FROM user WHERE username = $1", [username]); 
+    let user = await pool.query("SELECT * FROM pengguna WHERE username = $1", [username]); 
 
     if (user.rows.length > 0) return res.status(500).json({type: "UE", message: "Username sudah pernah digunakan"});
     
     const salt = await bcrypt.genSalt(10);
     const encryptedPassword = await bcrypt.hash(password, salt);
 
-    await pool.query("INSERT INTO user (username, password, tanggal_lahir, alamat, no_telepon, no_rekening, nama_bank) VALUES ($1, $2, $3, $4, $5, $6, $7)",
+    await pool.query("INSERT INTO pengguna (username, password, tanggal_lahir, alamat, no_telepon, no_rekening, nama_bank) VALUES ($1, $2, $3, $4, $5, $6, $7)",
       [username, encryptedPassword, tanggal_lahir, alamat, no_telepon, no_rekening, nama_bank]
     );
 
