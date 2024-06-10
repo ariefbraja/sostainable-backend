@@ -21,7 +21,7 @@ router.post("/login", validInfo, async (req, res) => {
     
     if (!validPassword) return res.status(500).json({type: "WC", message: "Username atau Password Salah"});
     
-    const jwtToken = jwtGenerator(username, role);
+    const jwtToken = jwtGenerator(username);
 
     return res.json({ jwtToken });
 

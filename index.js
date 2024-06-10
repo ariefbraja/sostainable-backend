@@ -4,10 +4,11 @@ const express = require("express");
 const app = express();
 const cors = require("cors");
 const auth = require("./routes/auth");
+const event = require("./routes/event");
 
 // middleware
 app.use(cors({
-    origin: ['http://localhost:3000'],
+    origin: ['*'],
     credentials: true,
     allowedHeaders: ['Content-Type', 'jwt_token', 'Authorization'],
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'] 
@@ -17,6 +18,7 @@ app.use(express.json());
 
 // Use routes
 app.use('/auth', auth);
+app.use('/event', event);
 
 app.listen(process.env.PORT || 5000, () => {
     console.log("server has started on port 5000");
