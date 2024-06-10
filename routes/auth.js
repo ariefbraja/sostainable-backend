@@ -13,17 +13,17 @@ router.post("/login", validInfo, async (req, res) => {
   try {
     let user = await pool.query("SELECT * FROM pengguna WHERE username = $1", [username]); 
 
-    if (user.rows.length == 0) return res.status(403).json({type: "WC", message: "Username atau Password Salah"});
+    if (user.rows.length == 0) return res.json({status: 400, message: "Username atau password salah"});
     
     let validPassword = false;
 
     if (user.rows.length == 1) validPassword = await bcrypt.compare(password,user.rows[0].password);
     
-    if (!validPassword) return res.status(500).json({type: "WC", message: "Username atau Password Salah"});
+    if (!validPassword)return res.json({status: 400, message: "Username atau password salah"});
     
     const jwtToken = jwtGenerator(username);
 
-    return res.json({ jwtToken });
+    return res.json({status: 200, message: "Login berhasil", token: jwtToken});
 
   } catch (err) {
     console.error(err.message);
@@ -38,7 +38,7 @@ router.post("/register", async (req, res) => {
   try {
     let user = await pool.query("SELECT * FROM pengguna WHERE username = $1", [username]); 
 
-    if (user.rows.length > 0) return res.status(500).json({type: "UE", message: "Username sudah pernah digunakan"});
+    if (user.rows.length > 0) return res.json({status: 400, message: "Username sudah pernah digunakan"});
     
     const salt = await bcrypt.genSalt(10);
     const encryptedPassword = await bcrypt.hash(password, salt);
@@ -47,7 +47,7 @@ router.post("/register", async (req, res) => {
       [username, encryptedPassword, tanggal_lahir, alamat, no_telepon, no_rekening, nama_bank]
     );
 
-    return res.json({ type: "S", message: "Register success"});
+    return res.json({status: 200, message: "Pembuatan akun berhasil"});
 
   } catch (err) {
     console.error(err.message);
