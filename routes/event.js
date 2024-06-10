@@ -62,4 +62,45 @@ router.post("/create", async(req, res) => {
       }
 })
 
+router.post("/join", async (req, res) => {
+    try {
+        const { id_event } = req.body;
+        const authHeader = req.header("Authorization");
+        const token = authHeader && authHeader.split(' ')[1];
+        let verify = jwt.verify(token, process.env.jwtSecret);
+        let username = verify.user.username;
+
+        await pool.query("INSERT INTO PENGGUNA_EVENT(username, id_event) VALUES($1,$2)", [username, id_event]);
+
+        return res.json({status: 201, message: "Berhasil gabung ke dalam event!"});
+  
+    } catch (err) {
+      console.error(err.message);
+      return res.status(500).json({status: 500, message: err.message});
+    }
+});
+
+router.post("/donate", async (req, res) => {
+    try {
+        const { tanggal, nominal, id_event } = req.body;
+        const authHeader = req.header("Authorization");
+        const token = authHeader && authHeader.split(' ')[1];
+        let verify = jwt.verify(token, process.env.jwtSecret);
+        let username = verify.user.username;
+
+        let query = "SELECT COUNT(*) as jumlah_donasi FROM donasi WHERE id_donasi LIKE $1";
+        jumlah_donasi = (await pool.query(query, [`${tipe_lokasi.toUpperCase()}%`])).rows[0].jumlah_donasi;
+        let id_donasi = `DONASI-${(parseInt(jumlah_donasi)+1).toString().padStart(3, '0')}`;
+
+        await pool.query("INSERT INTO DONASI(id_donasi, tanggal, nominal, username, id_donasi) VALUES($1,$2,$3,$4,$5)", [id_donasi, tanggal, nominal, username, id_event]);
+
+        return res.json({status: 201, message: `Berhasil donasi ke event dengan ID ${id_event}!`});
+  
+    } catch (err) {
+      console.error(err.message);
+      return res.status(500).json({status: 500, message: err.message});
+    }
+});
+
+
 module.exports = router;
