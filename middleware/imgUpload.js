@@ -30,7 +30,7 @@ ImgUpload.uploadToGcs = (id_event) => {
         const uploadPromises = [];
 
         req.files.forEach((file, index) => {
-            const gcsname = `${folderPath}/${index}`;
+            const gcsname = `${folderPath}/event-${index}`;
             const fileUpload = bucket.file(gcsname);
 
             // Create a promise for each file upload
@@ -64,6 +64,48 @@ ImgUpload.uploadToGcs = (id_event) => {
                 next();
             })
             .catch((err) => {
+                next(err);
+            });
+    };
+};
+
+ImgUpload.uploadToGcsSingle = (username) => {
+    return (req, res, next) => {
+        if (!req.file) return next();
+
+        const gcsname = `images/${username}/profile`;
+        const file = bucket.file(gcsname);
+
+        // Check if the file exists and delete it if it does
+        file.exists()
+            .then(data => {
+                const exists = data[0];
+                if (exists) {
+                    return file.delete();
+                }
+            })
+            .then(() => {
+                const stream = file.createWriteStream({
+                    metadata: {
+                        contentType: req.file.mimetype
+                    }
+                });
+
+                stream.on('error', (err) => {
+                    req.file.cloudStorageError = err;
+                    next(err);
+                });
+
+                stream.on('finish', () => {
+                    req.file.cloudStorageObject = gcsname;
+                    req.file.cloudStoragePublicUrl = getPublicUrl(gcsname);
+                    next();
+                });
+
+                stream.end(req.file.buffer);
+            })
+            .catch(err => {
+                req.file.cloudStorageError = err;
                 next(err);
             });
     };

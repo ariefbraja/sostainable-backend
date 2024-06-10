@@ -89,7 +89,7 @@ router.post("/create", (req, res, next) => {
             )) {
                 return res.status(400).json({
                     status: 400,
-                    message: "All fields are required 22222"
+                    message: "All fields are required"
                 });
             }
 
