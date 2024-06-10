@@ -25,11 +25,14 @@ router.get("", async (req, res) => {
 
 router.post("/update", async (req, res) => {
     try {
-        const { nama, tanggal_lahir, alamat, no_telepon, no_rekening, nama_bank } = req.body;
+        const { username, nama, tanggal_lahir, alamat, no_telepon, no_rekening, nama_bank } = req.body;
         const authHeader = req.header("Authorization");
         const token = authHeader && authHeader.split(' ')[1];
         let verify = jwt.verify(token, process.env.jwtSecret);
-        let username = verify.user.username;
+        let oldUsername = verify.user.username;
+
+        queryCheckUsername = await pool.query("SELECT * FROM pengguna where username = $1", [username]);
+        if (queryCheckUsername.rows.length > 0 && username != oldUsername) return res.json({status: 500, message: "Username sudah digunakan!"});
 
         if (nama.length > 40) return res.json({status: 500, message: "Nama tidak boleh melebihi 40 karakter!"});
 
