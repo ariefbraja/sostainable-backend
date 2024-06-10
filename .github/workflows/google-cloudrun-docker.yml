@@ -90,6 +90,7 @@ jobs:
           DB_NAME: ${{ secrets.DB_NAME }}
           jwtSecret: ${{ secrets.jwtSecret }}
         run: |-
+          echo "${{ secrets.BUCKET_KEY }}" > /tmp/bucket_key.json
           docker build \
             --build-arg DB_USER="${{ secrets.DB_USER }}" \
             --build-arg DB_PASSWORD="${{ secrets.DB_PASSWORD }}" \
@@ -98,6 +99,7 @@ jobs:
             --build-arg DB_NAME="${{ secrets.DB_NAME }}" \
             --build-arg jwtSecret="${{ secrets.jwtSecret }}" \
             -t "${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.GAR_NAME }}/${{ env.SERVICE }}:${{ github.sha }}" ./
+          rm /tmp/bucket_key.json
           docker push "${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.GAR_NAME }}/${{ env.SERVICE }}:${{ github.sha }}"
 
       # END - Docker auth and build
