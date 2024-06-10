@@ -32,9 +32,9 @@ router.post("/update", async (req, res) => {
         let oldUsername = verify.user.username;
 
         queryCheckUsername = await pool.query("SELECT * FROM pengguna where username = $1", [username]);
-        if (queryCheckUsername.rows.length > 0 && username != oldUsername) return res.json({status: 500, message: "Username sudah digunakan!"});
+        if (queryCheckUsername.rows.length > 0 && username != oldUsername) return res.json({status: 400, message: "Username sudah digunakan!"});
 
-        if (nama.length > 40) return res.json({status: 500, message: "Nama tidak boleh melebihi 40 karakter!"});
+        if (nama.length > 40) return res.json({status: 400, message: "Nama tidak boleh melebihi 40 karakter!"});
 
         await pool.query("UPDATE PENGGUNA SET username = $1, nama = $2, tanggal_lahir = $3, alamat = $4, no_telepon = $5, no_rekening = $6, nama_bank = $7", 
           [username, nama , tanggal_lahir, alamat, no_telepon, no_rekening, nama_bank]); 
