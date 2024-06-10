@@ -31,7 +31,7 @@ router.post("/update", async (req, res) => {
         let verify = jwt.verify(token, process.env.jwtSecret);
         let username = verify.user.username;
 
-        if (nama.length > 120) return res.json({status: 500, message: "Nama tidak boleh melebihi 120 karakter!"});
+        if (nama.length > 40) return res.json({status: 500, message: "Nama tidak boleh melebihi 40 karakter!"});
 
         await pool.query("UPDATE PENGGUNA SET username = $1, nama = $2, tanggal_lahir = $3, alamat = $4, no_telepon = $5, no_rekening = $6, nama_bank = $7", 
           [username, nama , tanggal_lahir, alamat, no_telepon, no_rekening, nama_bank]); 
