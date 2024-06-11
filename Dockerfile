@@ -1,6 +1,6 @@
 FROM node:20.6.1
 WORKDIR /app
-COPY serviceaccountkey.json /app
+COPY COPY serviceaccountkey.tmp.json /app/serviceaccountkey.json
 COPY . .
 RUN npm install
 
