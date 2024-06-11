@@ -51,7 +51,6 @@ router.get("", async (req, res) => {
 router.put("/update", customMulterMiddleware, async (req, res) => {
     try {
         const { username, nama, tanggal_lahir, alamat, no_telepon, no_rekening, nama_bank } = req.body;
-        console.log(req.body);
         const authHeader = req.header("Authorization");
         const token = authHeader && authHeader.split(' ')[1];
         let verify = jwt.verify(token, process.env.jwtSecret);
