@@ -91,7 +91,7 @@ jobs:
           jwtSecret: ${{ secrets.jwtSecret }}
           NSFW_MODEL: ${{ secrets.NSFW_MODEL }}
         run: |-
-          echo "${{ secrets.BUCKET_KEY }}" > /tmp/serviceaccountkey.json
+          echo "${{ secrets.BUCKET_KEY }}" > /app/serviceaccountkey.json
           docker build \
             --build-arg DB_USER="${{ secrets.DB_USER }}" \
             --build-arg DB_PASSWORD="${{ secrets.DB_PASSWORD }}" \
