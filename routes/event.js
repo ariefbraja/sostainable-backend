@@ -141,7 +141,7 @@ router.post("/create", (req, res, next) => {
                 await pool.query(query, [id_event, judul_event, foto_lokasi, alamat, deskripsi, tanggal_mulai, tanggal_selesai, jam_mulai, jam_selesai, jumlah_minimum_volunteer, jumlah_minimum_donasi, username]);
             
                 // Return success response
-                return res.json({
+                return res.status(201).json({
                     status: 201,
                     message: "Event berhasil dibuat"
                 });
@@ -168,7 +168,7 @@ router.post("/join", async (req, res) => {
 
         await pool.query("INSERT INTO PENGGUNA_EVENT(username, id_event) VALUES($1,$2)", [username, id_event]);
 
-        return res.json({status: 201, message: "Berhasil gabung ke dalam event!"});
+        return res.status(201).json({status: 201, message: "Berhasil gabung ke dalam event!"});
   
     } catch (err) {
       console.error(err.message);
@@ -184,13 +184,13 @@ router.post("/donate", async (req, res) => {
         let verify = jwt.verify(token, process.env.jwtSecret);
         let username = verify.user.username;
 
-        let query = "SELECT COUNT(*) as jumlah_donasi FROM donasi WHERE id_donasi LIKE $1";
-        jumlah_donasi = (await pool.query(query, [`${tipe_lokasi.toUpperCase()}%`])).rows[0].jumlah_donasi;
+        let query = "SELECT COUNT(*) as jumlah_donasi FROM donasi";
+        jumlah_donasi = (await pool.query(query)).rows[0].jumlah_donasi;
         let id_donasi = `DONASI-${(parseInt(jumlah_donasi)+1).toString().padStart(3, '0')}`;
 
-        await pool.query("INSERT INTO DONASI(id_donasi, tanggal, nominal, username, id_donasi) VALUES($1,$2,$3,$4,$5)", [id_donasi, tanggal, nominal, username, id_event]);
+        await pool.query("INSERT INTO DONASI(id_donasi, tanggal, nominal, username, id_event) VALUES($1,$2,$3,$4,$5)", [id_donasi, tanggal, nominal, username, id_event]);
 
-        return res.json({status: 201, message: `Berhasil donasi ke event dengan ID ${id_event}!`});
+        return res.status(201).json({status: 201, message: `Berhasil donasi ke event dengan ID ${id_event}!`});
   
     } catch (err) {
       console.error(err.message);

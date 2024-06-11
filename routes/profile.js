@@ -40,7 +40,7 @@ router.get("", async (req, res) => {
 
         if (query.rows.length == 0) res.status(404).json({status: 404, message: "Profil tidak ditemukan"});
 
-        return res.json({status: 201, data: query.rows[0]});
+        return res.json({status: 200, data: query.rows[0]});
   
     } catch (err) {
       console.error(err.message);
