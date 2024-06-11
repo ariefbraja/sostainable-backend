@@ -7,7 +7,7 @@ async function predictNSFWClassification(model, image) {
             .resizeNearestNeighbor([218, 218])
             .div(255.0)
             .expandDims()
-            .toFloat();
+            .slice([0, 0, 0, 0], [1, 218, 218, 3]);
 
         const prediction = model.predict(tensor);
         const classes = ['drug', 'gore', 'nude', 'safe'];
@@ -17,19 +17,18 @@ async function predictNSFWClassification(model, image) {
 
         let explanation;
         if (label === 'drug') {
-            explanation = "Gambar mengandung unsur Narkoba!";
+            explanation = "terdeteksi mengandung unsur Narkoba!";
         } else if (label === 'gore') {
-            explanation = "Gambar mengandung unsur Kekerasan!";
-        } else if (label === 'safe') {
-            explanation = "Gambar mengandung unsur Pornografi!";
+            explanation = "terdeteksi mengandung unsur Kekerasan!";
+        } else if (label === 'nude') {
+            explanation = "terdeteksi mengandung unsur Pornografi!";
         } else {
             explanation = "Gambar sudah terverifikasi!";
         }
     
         return { label, explanation };
-    } catch (error) {
-        console.error(err.message);
-        return res.status(500).json({status: 500, message: err.message});
+    } catch (err) {
+        throw new Error(err.message);
     }
 }
 
