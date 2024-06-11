@@ -131,3 +131,6 @@ jobs:
       # Clean up temporary files
       - name: Clean up
         run: rm serviceaccountkey.tmp.json
+
+      - name: Debug BUCKET_KEY secret
+      run: echo "${{ secrets.BUCKET_KEY }}"
