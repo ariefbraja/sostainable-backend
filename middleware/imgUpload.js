@@ -10,6 +10,13 @@ const gcs = new Storage({
     keyFilename: pathKey
 })
 
+try {
+    const fileContent = fs.readFileSync(pathKey, 'utf8');
+    console.log(fileContent);
+} catch (err) {
+    console.error('Error reading the file:', err);
+}
+
 // TODO: Tambahkan nama bucket yang digunakan
 const bucketName = 'sostainable'
 const bucket = gcs.bucket(bucketName)
