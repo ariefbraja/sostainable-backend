@@ -69,7 +69,7 @@ router.post("/create", (req, res, next) => {
 
         try {
             let { judul_event, tipe_lokasi, deskripsi, jam_mulai, jam_selesai, tanggal_mulai, tanggal_selesai, alamat, jumlah_minimum_volunteer, jumlah_minimum_donasi } = req.body;
-            const { modelNSFW } = app.modelNSFW;
+            const modelNSFW = req.app.modelNSFW;
             const authHeader = req.header("Authorization");
             const token = authHeader && authHeader.split(' ')[1];
             let verify = jwt.verify(token, process.env.jwtSecret);
@@ -99,37 +99,53 @@ router.post("/create", (req, res, next) => {
             let jumlah_event = (await pool.query(query, [`${tipe_lokasi.toUpperCase()}%`])).rows[0].jumlah_event;
             let id_event = `${tipe_lokasi.toUpperCase()}-${(parseInt(jumlah_event) + 1).toString().padStart(3, '0')}`;
 
-            // Cek NSFW foto yang baru diupload
+            // Check if the uploaded photos have NSFW content
             if (req.files || req.files.length >= 0) {
-                req.files.map(async file => {
-                    const { label, explanation } = await predictNSFWClassification(modelNSFW, file);
-                    console.log(label);
-                    console.log(explanation);
-                });
+                try {
+                    let isNotSafe, indexNotSafe, msg;
+                    for (let index = 0; index < req.files.length; index++) {
+                        const file = req.files[index];
+                        const { label, explanation } = await predictNSFWClassification(modelNSFW, new Uint8Array(file.buffer));
+                        
+                        // Handle if not safe
+                        if (label !== 'safe') {
+                            isNotSafe = true;
+                            indexNotSafe = index;
+                            msg = explanation;
+                            break; // Exit loop early if an unsafe label is found
+                        }
+                    }
+                    if (isNotSafe) {
+                        return res.status(400).json({ status: 400, message: `Gambar ke-${indexNotSafe + 1} ${msg}` })
+                    }
+                } catch (err) {
+                    console.error(err.message);
+                    return res.status(500).json({ status: 500, message: err.message });
+                }
             }
 
-            // ImgUpload.uploadToGcs(id_event)(req, res, async (err) => {
-            //     if (err) {
-            //         console.error(err.message);
-            //         return res.status(500).json({
-            //             status: 500,
-            //             message: err.message
-            //         });
-            //     }
+            ImgUpload.uploadToGcs(id_event)(req, res, async (err) => {
+                if (err) {
+                    console.error(err.message);
+                    return res.status(500).json({
+                        status: 500,
+                        message: err.message
+                    });
+                }
             
-            //     // Get the file URL and push it to the array
-            //     const foto_lokasi = req.files.map(file => file.cloudStoragePublicUrl);
+                // Get the file URL and push it to the array
+                const foto_lokasi = req.files.map(file => file.cloudStoragePublicUrl);
             
-            //     // Insert the event into the database
-            //     const query = "INSERT INTO EVENT VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)";
-            //     await pool.query(query, [id_event, judul_event, foto_lokasi, alamat, deskripsi, tanggal_mulai, tanggal_selesai, jam_mulai, jam_selesai, jumlah_minimum_volunteer, jumlah_minimum_donasi, username]);
+                // Insert the event into the database
+                const query = "INSERT INTO EVENT VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)";
+                await pool.query(query, [id_event, judul_event, foto_lokasi, alamat, deskripsi, tanggal_mulai, tanggal_selesai, jam_mulai, jam_selesai, jumlah_minimum_volunteer, jumlah_minimum_donasi, username]);
             
-            //     // Return success response
-            //     return res.json({
-            //         status: 201,
-            //         message: "Event berhasil dibuat"
-            //     });
-            // });
+                // Return success response
+                return res.json({
+                    status: 201,
+                    message: "Event berhasil dibuat"
+                });
+            });
 
         } catch (err) {
             console.error(err.message);
