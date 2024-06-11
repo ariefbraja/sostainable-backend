@@ -1,27 +1,39 @@
-// index.js
 require('dotenv').config();
 const express = require("express");
-const app = express();
 const cors = require("cors");
 const auth = require("./routes/auth");
 const event = require("./routes/event");
+const loadModel = require('./middleware/loadModel');
 const profile = require("./routes/profile");
 
-// middleware
-app.use(cors({
-    origin: ['*'],
-    credentials: true,
-    allowedHeaders: ['Content-Type', 'jwt_token', 'Authorization'],
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'] 
-  }));
+const startServer = async () => {
+    const app = express();
 
-app.use(express.json());
+    // middleware
+    app.use(cors({
+        origin: ['*'],
+        credentials: true,
+        allowedHeaders: ['Content-Type', 'jwt_token', 'Authorization'],
+        methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS']
+    }));
 
-// Use routes
-app.use('/auth', auth);
-app.use('/event', event);
-app.use('/profile', profile);
+    app.use(express.json());
 
-app.listen(process.env.PORT || 5000, () => {
-    console.log("server has started on port 5000");
-});
+    // Load the model
+    const model = await loadModel();
+    app.modelNSFW = model;
+    console.log("Model loaded and server is starting...");
+
+    // Use routes
+    app.use('/auth', auth);
+    app.use('/event', event);
+    app.use('/profile', profile);
+
+    // Start the server
+    app.listen(process.env.PORT || 5000, () => {
+        console.log(`Server has started on port ${process.env.PORT || 5000}`);
+    });
+};
+
+// Start the server
+startServer();
