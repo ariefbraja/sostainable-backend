@@ -11,8 +11,9 @@ const gcs = new Storage({
 })
 
 try {
-    const fileContent = fs.readFileSync(pathKey, 'utf8');
-    console.log(fileContent);
+    const fileContent = fs.readFileSync(pathKey);
+    const parsedContent = JSON.parse(fileContent);
+    console.log(parsedContent);
 } catch (err) {
     console.error('Error reading the file:', err);
 }
