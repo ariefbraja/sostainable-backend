@@ -82,8 +82,8 @@ router.put("/update", customMulterMiddleware, async (req, res) => {
             foto_profil = user.rows[0].foto_profil;
         }
 
-        await pool.query("UPDATE PENGGUNA SET username = $1, nama = $2, tanggal_lahir = $3, alamat = $4, no_telepon = $5, no_rekening = $6, nama_bank = $7, foto_profil = $8", 
-          [username, nama , tanggal_lahir, alamat, no_telepon, no_rekening, nama_bank, foto_profil]); 
+        await pool.query("UPDATE PENGGUNA SET username = $1, nama = $2, tanggal_lahir = $3, alamat = $4, no_telepon = $5, no_rekening = $6, nama_bank = $7, foto_profil = $8 WHERE username = $9", 
+          [username, nama , tanggal_lahir, alamat, no_telepon, no_rekening, nama_bank, foto_profil, oldUsername]); 
 
         const jwtToken = jwtGenerator(username);
 
