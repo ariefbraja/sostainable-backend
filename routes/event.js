@@ -198,5 +198,56 @@ router.post("/donate", async (req, res) => {
     }
 });
 
+router.post("/list", async (req, res) => {
+    try {
+        const authHeader = req.header("Authorization");
+        const token = authHeader && authHeader.split(' ')[1];
+        let verify = jwt.verify(token, process.env.jwtSecret);
+        let username = verify.user.username;
+
+        query = await pool.query("SELECT * FROM PENGGUNA_EVENT WHERE username=$1 ", [username]);
+
+        return res.status(201).json({status: 201, listDonasi: query.rows});
+  
+    } catch (err) {
+      console.error(err.message);
+      return res.status(500).json({status: 500, message: err.message});
+    }
+});
+
+router.post("/list", async (req, res) => {
+    try {
+        const authHeader = req.header("Authorization");
+        const token = authHeader && authHeader.split(' ')[1];
+        let verify = jwt.verify(token, process.env.jwtSecret);
+        let username = verify.user.username;
+
+        query = await pool.query("SELECT * FROM PENGGUNA_EVENT WHERE username=$1 ", [username]);
+
+        return res.status(201).json({status: 201, listEvent: query.rows});
+  
+    } catch (err) {
+      console.error(err.message);
+      return res.status(500).json({status: 500, message: err.message});
+    }
+});
+
+router.post("/donate/list", async (req, res) => {
+    try {
+        const authHeader = req.header("Authorization");
+        const token = authHeader && authHeader.split(' ')[1];
+        let verify = jwt.verify(token, process.env.jwtSecret);
+        let username = verify.user.username;
+
+        query = await pool.query("SELECT * FROM donasi WHERE username=$1 ", [username]);
+
+        return res.status(201).json({status: 201, listDonasi: query.rows});
+  
+    } catch (err) {
+      console.error(err.message);
+      return res.status(500).json({status: 500, message: err.message});
+    }
+});
+
 
 module.exports = router;
