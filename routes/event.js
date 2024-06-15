@@ -224,7 +224,7 @@ router.get("/list", async (req, res) => {
 
         query = await pool.query("SELECT * FROM PENGGUNA_EVENT WHERE username=$1 ", [username]);
 
-        return res.status(201).json({status: 201, listEvent: query.rows});
+        return res.status(201).json({status: 200, listEvent: query.rows});
   
     } catch (err) {
       console.error(err.message);
@@ -241,7 +241,7 @@ router.get("/donate/list", async (req, res) => {
 
         query = await pool.query("SELECT * FROM donasi WHERE username=$1 ", [username]);
 
-        return res.status(201).json({status: 201, listDonasi: query.rows});
+        return res.status(201).json({status: 200, listDonasi: query.rows});
   
     } catch (err) {
       console.error(err.message);
