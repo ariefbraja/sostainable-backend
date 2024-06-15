@@ -215,7 +215,7 @@ router.post("/list", async (req, res) => {
     }
 });
 
-router.post("/list", async (req, res) => {
+router.get("/list", async (req, res) => {
     try {
         const authHeader = req.header("Authorization");
         const token = authHeader && authHeader.split(' ')[1];
@@ -232,7 +232,7 @@ router.post("/list", async (req, res) => {
     }
 });
 
-router.post("/donate/list", async (req, res) => {
+router.get("/donate/list", async (req, res) => {
     try {
         const authHeader = req.header("Authorization");
         const token = authHeader && authHeader.split(' ')[1];
