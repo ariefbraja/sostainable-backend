@@ -93,7 +93,7 @@ jobs:
           DB_NAME: ${{ secrets.DB_NAME }}
           jwtSecret: ${{ secrets.jwtSecret }}
           NSFW_MODEL: ${{ secrets.NSFW_MODEL }}
-          NSFW_MODEL: ${{ secrets.WASTE_MODEL }}
+          WASTE_MODEL: ${{ secrets.WASTE_MODEL }}
         run: |-
           docker build \
             --build-arg DB_USER="${{ secrets.DB_USER }}" \
