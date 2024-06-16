@@ -1,7 +1,11 @@
 const tf = require('@tensorflow/tfjs-node');
 
-async function loadModel() {
+async function loadModelNSFW() {
     return tf.loadGraphModel(process.env.NSFW_MODEL);
 }
 
-module.exports = loadModel;
+async function loadModelWaste() {
+    return tf.loadGraphModel(process.env.WASTE_MODEL);
+}
+
+module.exports = { loadModelNSFW, loadModelWaste };

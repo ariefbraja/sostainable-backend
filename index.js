@@ -3,7 +3,7 @@ const express = require("express");
 const cors = require("cors");
 const auth = require("./routes/auth");
 const event = require("./routes/event");
-const loadModel = require('./middleware/loadModel');
+const { loadModelNSFW, loadModelWaste } = require('./middleware/loadModel');
 const profile = require("./routes/profile");
 
 const startServer = async () => {
@@ -20,8 +20,10 @@ const startServer = async () => {
     app.use(express.json());
 
     // Load the model
-    const model = await loadModel();
-    app.modelNSFW = model;
+    const modelNSFW = await loadModelNSFW();
+    app.modelNSFW = modelNSFW;
+    const modelWaste = await loadModelWaste();
+    app.modelWaste = modelWaste;
     console.log("Model loaded and server is starting...");
 
     // Use routes
