@@ -32,4 +32,29 @@ async function predictNSFWClassification(model, image) {
     }
 }
 
-module.exports = predictNSFWClassification;
+async function predictWasteClassification(model, image) {
+    try {
+        const tensor = tf.node
+            .decodeImage(image)
+            .resizeNearestNeighbor([218, 218]) // Resize to 218x218
+            .div(255.0)
+            .expandDims(); // Add batch dimension
+
+        const prediction = model.predict(tensor);
+        const score = await prediction.data();
+        const confidenceScore = Math.max(...score) * 100;
+
+        // TODO
+        if (confidenceScore > 50) {
+            result = 'kotor';
+        } else {
+            result = 'bersih';
+        }
+    
+        return { result, confidenceScore };
+    } catch (err) {
+        throw new Error(err.message);
+    }
+}
+
+module.exports =  { predictNSFWClassification, predictWasteClassification };
