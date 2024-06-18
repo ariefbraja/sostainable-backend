@@ -228,6 +228,23 @@ router.get("/list", async (req, res) => {
     }
 });
 
+router.get("/list/created-events", async (req, res) => {
+    try {
+        const authHeader = req.header("Authorization");
+        const token = authHeader && authHeader.split(' ')[1];
+        let verify = jwt.verify(token, process.env.jwtSecret);
+        let username = verify.user.username;
+
+        query = await pool.query("SELECT * FROM event WHERE username=$1 ", [username]);
+
+        return res.status(201).json({status: 200, listEvent: query.rows});
+  
+    } catch (err) {
+      console.error(err.message);
+      return res.status(500).json({status: 500, message: err.message});
+    }
+});
+
 router.get("/donate/list", async (req, res) => {
     try {
         const authHeader = req.header("Authorization");
