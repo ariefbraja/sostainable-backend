@@ -325,7 +325,7 @@ router.post("/laporan/create", async (req, res) => {
         const queryInsertLaporan = kendala ?
             "INSERT INTO LAPORAN VALUES ($1, $2, $3, $4, $5, $6)" :
             "INSERT INTO LAPORAN (id_laporan, jumlah_volunteer, username, id_event, foto_dokumentasi) VALUES ($1, $2, $3, $4, $5)";
-        await pool.query(queryInsertLaporan, kendala ? [id_laporan, kendala, jumlah_volunteer, username, id_event, foto_dokumentasi] : [id_laporan, jumlah_volunteer, username, id_event, foto_dokumentasi]);
+        await pool.query(queryInsertLaporan, kendala ? [id_laporan, kendala, jumlah_volunteer, username, foto_dokumentasi, id_event] : [id_laporan, jumlah_volunteer, username, id_event, foto_dokumentasi]);
 
         return res.status(201).json({
             status: 201,
